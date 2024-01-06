@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift './lib'
+
+require 'brain'
+require 'thor'
+
+class Cli < Thor
+  desc 'explore', 'Interactively explore the brain'
+  def explore
+    brain = Brain.acquire_knowledge!
+
+  end
+end
+
+Cli.start ARGV
