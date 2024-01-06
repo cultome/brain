@@ -3,13 +3,50 @@
 $LOAD_PATH.unshift './lib'
 
 require 'brain'
+require 'pry'
+require 'readline'
 require 'thor'
 
 class Cli < Thor
   desc 'explore', 'Interactively explore the brain'
   def explore
-    brain = Brain.acquire_knowledge!
+    knowledge = Brain.acquire_knowledge!
+    cortex = Brain::Cortex.new knowledge
 
+    loop do
+      input = Readline.readline("#{cortex.pwd} > ", true)
+      cmd = parse_command input
+
+      case cmd[:action]
+      when 'cd'
+        cortex.cd cmd[:params].first
+      when 'pwd'
+        puts cortex.pwd
+      when 'ls'
+        cortex.ls.each do |element|
+          puts element
+        end
+      when 'show'
+        neuron = cortex.get_neuron_by_name cmd[:params].first
+
+        if neuron.nil?
+          puts "Unable to find [#{cmd[:params].first}]"
+        else
+          puts neuron.content
+        end
+      when 'exit'
+        break
+      end
+    end
+
+    puts 'Done!'
+  end
+
+  no_commands do
+    def parse_command(input)
+      action, *params = input.split(' ')
+      { action: action, params: params }
+    end
   end
 end
 

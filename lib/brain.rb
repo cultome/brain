@@ -4,6 +4,7 @@ require 'securerandom'
 
 require_relative 'brain/version'
 require_relative 'brain/neuron'
+require_relative 'brain/cortex'
 
 module Brain
   extend self
@@ -19,13 +20,13 @@ module Brain
   end
 
   def acquire_knowledge!(folder = KNOWLEDGE_FOLDER)
-    brain = { path: '/', neurons: [], dentrites: {} }
+    knowledge = { path: '/', neurons: [], dentrites: {} }
 
     Dir.children(folder)
       .map { |filename| File.join folder, filename }
       .each do |filepath|
       if File.directory? filepath
-        brain = acquire_knowledge! filepath
+        knowledge = acquire_knowledge! filepath
       else
         content = File.read filepath
         lines = content.split("\n")
@@ -45,7 +46,7 @@ module Brain
             name = line.gsub(/^name:\s*/, '')
           elsif line.start_with? 'description: '
             description = line.gsub(/^description:\s*/, '')
-          elsif line.start_with? '---: '
+          elsif line.start_with? '---'
             content = lines.join("\n")
             break
           else
@@ -59,12 +60,12 @@ module Brain
 
           path.split('/').reduce('/') do |acc, segment|
             new_path = File.join(acc, segment)
-            brain[:dentrites][segment] ||= { path: new_path, neurons: [], dentrites: {} }
+            knowledge[:dentrites][segment] ||= { path: new_path, neurons: [], dentrites: {} }
 
             new_path
           end
 
-          brain_section = path.split('/').reduce(brain) do |acc, segment|
+          brain_section = path.split('/').reduce(knowledge) do |acc, segment|
             acc[:dentrites][segment]
           end
 
@@ -73,6 +74,6 @@ module Brain
       end
     end
 
-    brain
+    knowledge
   end
 end
