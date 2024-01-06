@@ -13,6 +13,9 @@ class Cli < Thor
     knowledge = Brain.acquire_knowledge!
     cortex = Brain::Cortex.new knowledge
 
+    Readline.completion_append_character = ' '
+    Readline.completion_proc = proc { |s| completions_for s }
+
     loop do
       input = Readline.readline("#{cortex.pwd} > ", true)
       cmd = parse_command input
@@ -43,9 +46,13 @@ class Cli < Thor
   end
 
   no_commands do
+    def completions_for(value)
+      ['cd', 'pwd', 'ls', 'show', 'exit']
+    end
+
     def parse_command(input)
       action, *params = input.split(' ')
-      { action: action, params: params }
+      { action: action, params: params || [] }
     end
   end
 end

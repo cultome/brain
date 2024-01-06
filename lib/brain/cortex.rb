@@ -31,16 +31,16 @@ class Brain::Cortex
   end
 
   def cd(path)
+    return @current = @knowledge if path.nil?
+
     tmp = @current
     path.split('/').each do |segment|
       tmp = tmp[:dentrites][segment]
     end
 
-    if tmp.nil?
-      raise "Unable to navigate to path [#{path}] from [#{@current[:path]}]"
-    else
-      @current = tmp
-    end
+    raise "Unable to navigate to path [#{path}] from [#{@current[:path]}]" if tmp.nil?
+
+    @current = tmp
   end
 
   def ls
