@@ -52,6 +52,7 @@ class Cli < Thor
 
     def parse_command(input)
       action, *params = input.split(' ')
+
       { action: action, params: params || [] }
     end
   end

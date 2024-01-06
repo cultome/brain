@@ -1,26 +1,4 @@
 class Brain::Cortex
-  module Element
-    class Neuron
-      def initialize(neuron)
-        @value = neuron
-      end
-
-      def to_s
-        "#{@value.name} [#{@value.type}]"
-      end
-    end
-
-    class Dentrite
-      def initialize(name)
-        @value = name
-      end
-
-      def to_s
-        "#{@value}/"
-      end
-    end
-  end
-
   def initialize(knowledge)
     @knowledge = knowledge
     @current = @knowledge
@@ -55,3 +33,5 @@ class Brain::Cortex
     @current[:neurons].first
   end
 end
+
+require_relative './cortex/element'
