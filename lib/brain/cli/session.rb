@@ -23,7 +23,17 @@ class Brain::Cli::Session
       else
         response = cmd.execute
 
-        puts response
+        case response[:display]
+        when :none
+        when :text
+          puts response[:value]
+        when :list
+          response[:value].each do |line|
+            puts line
+          end
+        when :error
+          puts "Error: #{response[:value]}"
+        end
       end
     end
 

@@ -37,10 +37,20 @@ class Brain::Context::Cortex
     raise "Unable to navigate to path [#{path.value}] from [#{@current[:path]}]" if tmp.nil?
 
     @current = tmp
+
+    {
+      success: true,
+      display: :none,
+      value: nil,
+    }
   end
 
   def pwd(*args)
-    @current[:path]
+    {
+      success: true,
+      display: :text,
+      value: @current[:path],
+    }
   end
 
   def ls(path = nil)
@@ -80,6 +90,8 @@ class Brain::Context::Cortex
     end
 
     {
+      success: true,
+      display: :list,
       value: neurons + dentrites,
       exact_match: last_segment.nil?,
     }
@@ -89,9 +101,17 @@ class Brain::Context::Cortex
     neuron = get_neuron_by_name cmd.params.first
 
     if neuron.nil?
-      raise "Unable to find [#{cmd.params.first}]"
+      {
+        success: false,
+        display: :error,
+        value: "Unable to find [#{cmd.params.first}]",
+      }
     else
-      neuron.content
+      {
+        success: true,
+        display: :text,
+        value: neuron.content,
+      }
     end
   end
 
@@ -116,7 +136,7 @@ class Brain::Context::Cortex
   end
 
   def prompt
-    pwd
+    pwd[:value]
   end
 
   def get_neuron_by_name(name)
