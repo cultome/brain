@@ -99,14 +99,20 @@ class Brain::Context::Cortex
     }
   end
 
-  def show
-    neuron = get_neuron_by_name cmd.params.first
+  def show(file = nil)
+    *path, filename = file.value.split('/')
+
+    node = path.reduce(@current) do |acc, segment|
+      acc&.dig(:dentrites, segment)
+    end
+
+    neuron = node[:neurons].find { |n| n.name == filename }
 
     if neuron.nil?
       {
         success: false,
         display: :error,
-        value: "Unable to find [#{cmd.params.first}]",
+        value: "Unable to find [#{filename}]",
       }
     else
       {
@@ -137,11 +143,6 @@ class Brain::Context::Cortex
 
   def prompt
     pwd[:value]
-  end
-
-  def get_neuron_by_name(name)
-    # TODO: implement
-    @current[:neurons].first
   end
 
   def actions
