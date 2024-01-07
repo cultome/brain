@@ -80,13 +80,15 @@ class Brain::Context::Cortex
         Element::Dentrite.new d, path_value.empty? ? File.join(d, '/') : File.join(path_value, d, '/')
       end
     else
+      partial_path = path_value.gsub last_segment, ''
+
       neurons = tmp[:neurons]
         .select { |n| n.name =~ /#{last_segment}/ }
-        .map { |n| Element::Neuron.new n, n.name }
+        .map { |n| Element::Neuron.new n, partial_path.empty? ? n.name : File.join(partial_path, n.name) }
 
       dentrites = tmp[:dentrites].keys
         .select { |d| d =~ /#{last_segment}/ }
-        .map { |d| Element::Dentrite.new d, "#{d}/" }
+        .map { |d| Element::Dentrite.new d, partial_path.empty? ? File.join(d, '/') : File.join(partial_path, d, '/') }
     end
 
     {
@@ -122,11 +124,9 @@ class Brain::Context::Cortex
   def completions_for(action, params)
     case action
     when 'cd'
-      resp = ls params.first
-      resp[:value].select(&:dentrite?).map { |d| "#{action} #{d.label}" }
+      ls(params.first)[:value].select(&:dentrite?).map { |d| "#{action} #{d.label}" }
     when 'ls'
-      require 'pry'; binding.pry
-      []
+      ls(params.first)[:value].map { |d| "#{action} #{d.label}" }
     when 'show'
       require 'pry'; binding.pry
       []
