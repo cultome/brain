@@ -23,6 +23,11 @@ class Brain::Cli::Session
       else
         response = cmd.execute
 
+        if response.nil?
+          puts 'Unable to respond to that command'
+          next
+        end
+
         case response[:display]
         when :none
         when :text

@@ -1,18 +1,23 @@
 class Brain::Context::Cortex
   RULES = {
     'cd' => {
+      description: 'Navigate into your brain structure',
       param_templates: ['', 'text'],
     },
     'ls' => {
+      description: 'List neurons and dentrites in this location',
       param_templates: ['', 'text'],
     },
     'pwd' => {
+      description: 'Name/path of the current location',
       param_templates: [''],
     },
     'show' => {
+      description: 'Show neuron context',
       param_templates: ['text'],
     },
-    'exit' => {
+    'help' => {
+      description: 'This help',
       param_templates: [''],
     },
   }.freeze
@@ -96,6 +101,20 @@ class Brain::Context::Cortex
       display: :list,
       value: neurons + dentrites,
       exact_match: last_segment.nil?,
+    }
+  end
+
+  def help(*args)
+    help_msg = RULES.map do |cmd, data|
+      usage = "#{cmd} <#{data[:param_templates].join('|')}>"
+
+      "#{usage.ljust(20)} #{data[:description]}"
+    end.join("\n")
+
+    {
+      success: true,
+      display: :text,
+      value: help_msg,
     }
   end
 
