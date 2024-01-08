@@ -5,6 +5,14 @@ class Brain::Cli::Param::Base
     @value = value
   end
 
+  def none?
+    false
+  end
+
+  def path?
+    false
+  end
+
   def text?
     false
   end

@@ -2,23 +2,23 @@ class Brain::Context::Cortex
   RULES = {
     'cd' => {
       description: 'Navigate into your brain structure',
-      param_templates: ['', 'text'],
+      param_templates: ['none', 'path'], # might be 'text|path,empty,numeric|text'
     },
     'ls' => {
       description: 'List neurons and dentrites in this location',
-      param_templates: ['', 'text'],
+      param_templates: ['none', 'path'],
     },
     'pwd' => {
       description: 'Name/path of the current location',
-      param_templates: [''],
+      param_templates: ['none'],
     },
     'show' => {
       description: 'Show neuron context',
-      param_templates: ['text'],
+      param_templates: ['path'],
     },
     'help' => {
       description: 'This help',
-      param_templates: [''],
+      param_templates: ['none'],
     },
   }.freeze
 
@@ -173,9 +173,20 @@ class Brain::Context::Cortex
   end
 
   def valid_params?(action, params)
-    actual_form = params.map { |c| c.type }.join(',')
+    param_templates = RULES.fetch(action, {})[:param_templates]
 
-    RULES.fetch(action, {})[:param_templates].include? actual_form
+    return true if params.empty? && param_templates.include?('none')
+
+    candidates = param_templates.map do |template|
+      template
+        .split(',')
+        .map { |p| p.split('|') }
+        .select { |tpx| tpx.size == params.size }
+    end.delete_if(&:empty?).flatten(1)
+
+    candidates.any? do |valid_templates|
+      valid_templates.zip(params).all? { |t, p| p.send "#{t}?" }
+    end
   end
 end
 

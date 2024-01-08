@@ -16,7 +16,7 @@ RSpec.describe Brain::Cli::Session do
       expect(cmd.params.first.value).to eq 'me'
     end
 
-    it 'parse an invalid command' do
+    it 'parse an invalid action' do
       cmd = session.parse_command 'wrong command'
 
       expect(cmd).not_to be_valid
@@ -28,6 +28,14 @@ RSpec.describe Brain::Cli::Session do
       expect(cmd).to be_valid
       expect(cmd.action).to eq 'cd'
       expect(cmd.params).to be_empty
+    end
+
+    it 'validate invalid parameters' do
+      cmd = session.parse_command 'cd 12345'
+      expect(cmd).not_to be_valid
+
+      cmd = session.parse_command 'cd uno dos'
+      expect(cmd).not_to be_valid
     end
   end
 

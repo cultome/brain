@@ -55,6 +55,8 @@ class Brain::Cli::Command
     params.map do |param|
       if param =~ /^[\d]+(.[\d]+)?$/
         Brain::Cli::Param.create_numeric param.to_f
+      elsif param =~ /^[a-z0-9_\/]+$/
+        Brain::Cli::Param.create_path param.to_s
       else
         Brain::Cli::Param.create_text param.to_s
       end
