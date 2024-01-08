@@ -54,6 +54,32 @@ class Brain::Cli::Session
   def parse_command(input)
     action, *params = input.split(' ').map(&:strip).delete_if(&:empty?)
 
-    Brain::Cli::Command.new action, params || [], contexts.first
+    clean_params = []
+    capturing = false
+    tmp = nil
+    (params || []).each do |param|
+      if param.include? '"'
+        param = param.gsub '"', ''
+
+        if capturing
+          capturing = false
+          param = tmp + " #{param}"
+          tmp = nil
+        else
+          tmp = ''
+          capturing = true
+        end
+      end
+
+      if capturing
+        tmp << " #{param}"
+      else
+        clean_params << param.strip
+      end
+    end
+
+    clean_params << tmp.strip unless tmp.nil?
+
+    Brain::Cli::Command.new action, clean_params, contexts.first
   end
 end

@@ -11,6 +11,13 @@ RSpec.describe Brain::Context::Cortex do
     expect(cortex.ls[:value].size).to eq 2
   end
 
+  context '#=' do
+    it 'calculates a math expression' do
+      resp = cortex.>> Brain::Cli::Param.create_text '1+1'
+      expect(resp[:value]).to eq '2'
+    end
+  end
+
   context '#ls' do
     it 'matches partial paths' do
       resp = cortex.ls Brain::Cli::Param.create_text 'm'

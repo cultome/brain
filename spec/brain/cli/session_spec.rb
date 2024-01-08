@@ -16,6 +16,14 @@ RSpec.describe Brain::Cli::Session do
       expect(cmd.params.first.value).to eq 'me'
     end
 
+    it 'parse quoted params' do
+      cmd = session.parse_command '>> "1 + 2 +3+4"'
+      expect(cmd.params.first.value).to eq '1 + 2 +3+4'
+
+      cmd = session.parse_command '>> "5+6 + 7'
+      expect(cmd.params.first.value).to eq '5+6 + 7'
+    end
+
     it 'parse an invalid action' do
       cmd = session.parse_command 'wrong command'
 

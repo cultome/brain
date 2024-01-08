@@ -16,6 +16,10 @@ class Brain::Context::Cortex
       description: 'Show neuron context',
       param_templates: ['path'],
     },
+    '>>' => {
+      description: 'Evaluates expression',
+      param_templates: ['text'],
+    },
     'help' => {
       description: 'This help',
       param_templates: ['none'],
@@ -140,6 +144,16 @@ class Brain::Context::Cortex
         value: neuron.content,
       }
     end
+  end
+
+  def >>(expr = nil)
+    resp = BasicObject.new.instance_eval expr.value
+
+    {
+      success: true,
+      display: :text,
+      value: resp.to_s,
+    }
   end
 
   #########
