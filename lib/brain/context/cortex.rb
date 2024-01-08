@@ -20,6 +20,10 @@ class Brain::Context::Cortex
       description: 'Evaluates expression',
       param_templates: ['text'],
     },
+    'note' => {
+      description: 'Creates a note',
+      param_templates: ['text'],
+    },
     'help' => {
       description: 'This help',
       param_templates: ['none'],
@@ -156,6 +160,10 @@ class Brain::Context::Cortex
     }
   end
 
+  def note(text = nil)
+    raise 'implement'
+  end
+
   #########
   # Utils #
   #########
@@ -167,8 +175,10 @@ class Brain::Context::Cortex
     when 'ls'
       ls(params.first)[:value].map { |d| "#{action} #{d.label}" }
     when 'show'
-      require 'pry'; binding.pry
-      []
+      ls(params.first)[:value]
+        .select(&:neuron?)
+        .select { |elem| elem.value.text? }
+        .map { |d| "#{action} #{d.label}" }
     else
       []
     end
